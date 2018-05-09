@@ -5,6 +5,7 @@ import argparse
 parent = {}
 status = {}
 release_id = {}
+description = {}
 cve_tickets = []
 
 
@@ -41,6 +42,7 @@ def update_data(filepath):
                 if ticket == c:
                     for release in cve[cv][c]['releases']:
                         if release == 'stretch':
+                            description[ticket] = cve[cv][c]['description']
                             parent[ticket] = cv
                             status[ticket] = cve[cv][c]['releases'][release]['status']
                             release_id[ticket] = cve[cv][c]['releases'][release]['repositories']['stretch']
@@ -54,13 +56,13 @@ def write_data_to_csv():
     with open('match_list.csv', 'w') as csvfile:
         data = csv.writer(csvfile, delimiter=',')
         data.writerow([
-            'ticket', 'component', 'status', 'release_id', 'link'])
+            'ticket', 'component', 'status', 'release_id', 'link', 'description'])
         for ticket in cve_tickets:
             link = 'https://security-tracker.debian.org/tracker/%s' % ticket
             if ticket in parent:
-                data.writerow([ticket, parent[ticket], status[ticket], release_id[ticket], link])
+                data.writerow([ticket, parent[ticket], status[ticket], release_id[ticket], link, description])
             else:
-                data.writerow([ticket, 'NA', 'NA', 'NA', link])
+                data.writerow([ticket, 'NA', 'NA', 'NA', link, description])
 
 
 def parse_options():
@@ -89,3 +91,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
